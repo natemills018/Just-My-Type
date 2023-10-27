@@ -1,68 +1,92 @@
-$(document).ready(function () {
 
-    $('#keyboard-upper-container').hide();
+let sentences = ['ten ate neite ate nee enet ite ate inet ent eate', 'Too ato too nOt enot one totA not anot tOO aNot', 'oat itain oat tain nate eate tea anne inant nean'];
+let characterDiv = $('#target-letter');
+let startTime = Date.now()
 
-    $(document).on('keydown', function (event) {
-        if (event.keyCode == 16) {
-            $('#keyboard-upper-container').show();
-            $('#keyboard-lower-container').hide();
-        }
+let sentenceIndex = 0;
+let characterIndex = 0;
+let numberOfMistakes = 0;
+let currentSentence = sentences[sentenceIndex];
+let characterstart = currentSentence[0];
+let currentCharacter = currentSentence.substring(characterIndex, characterIndex + 1);
+characterDiv.text(characterstart);
+
+
+
+$('#keyboard-upper-container').hide();
+
+$(document).on('keydown', function (event) {
+    if (event.keyCode == 16) {
+        $('#keyboard-upper-container').show();
+        $('#keyboard-lower-container').hide();
+    }
+});
+$(document).on('keyup', function (event) {
+    if (event.keyCode == 16) {
+        $('#keyboard-upper-container').hide();
+        $('#keyboard-lower-container').toggle();
+    }
+})
+
+
+function logEverything() {
+    console.log({
+        sentenceIndex,
+        characterIndex,
+        currentSentence,
+        currentCharacter
+    })
+}
+
+
+
+
+
+$('#sentence').text(currentSentence);
+$('#target-letter').text(currentCharacter);
+
+$(document).on("keypress", function (event) {
+    let keyPressed = $("#" + event.which);
+    $(keyPressed).css("background-color", 'orange');
+
+
+
+    $(document).on("keyup", function () {
+        $(keyPressed).css("background-color", 'whitesmoke');
     });
-    $(document).on('keyup', function (event) {
-        if (event.keyCode == 16) {
-            $('#keyboard-upper-container').hide();
-            $('#keyboard-lower-container').toggle();
-        }
-    })
+
+})
+
+$('#sentence').text(currentSentence);
+$('#target-letter').text(currentCharacter);
+
+$(document).on('keypress', function (event) {
+    if (event.which === sentences[sentenceIndex].charCodeAt(characterIndex)) {
+
+        $('#yellow-block').css('left', '+=17.5px');
+
+        $('#feedback').append('<span class ="glyphicon glyphicon-ok"></span>');
+
+        characterIndex++;
+
+        currentCharacter = currentSentence.substring(characterIndex, characterIndex + 1);
+        $('#target-letter').text(currentCharacter);
+
+        logEverything();
+
+        console.log(0.1+0.2)
 
 
-    let sentences = ['ten ate neite ate nee enet ite ate inet ent eate', 'Too ato too nOt enot one totA not anot tOO aNot', 'oat itain oat tain nate eate tea anne inant nean', 'itant eate anot eat nato inate eat anot tain eat', 'nee ene ate ite tent tiet ent ine ene ete ene ate'];
-    let characterDiv = $('#target-letter');
+        if (characterIndex >= currentSentence.length) {
 
+            sentenceIndex++;
+            currentSentence = sentences[sentenceIndex];
+            $('#sentence').text(currentSentence);
+            $('target-letter').text(currentCharacter);
 
-
-
-    let sentenceIndex = 0;
-    let characterIndex = 0;
-    let numberOfMistakes = 0;
-    let currentSentence = sentences[sentenceIndex];
-    let characterstart = currentSentence[0];
-    let currentCharacter = currentSentence.substring(characterIndex, characterIndex + 1);
-    characterDiv.text(characterstart);
-
-    $('#sentence').text(currentSentence);
-    $('#target-letter').text(currentCharacter);
-
-    $(document).on("keypress", function (event) {
-        let keyPressed = $("#" + event.which);
-        $(keyPressed).css("background-color", 'orange');
-
-
-
-        $(document).on("keyup", function () {
-            $(keyPressed).css("background-color", 'lightblue');
-        });
-
-    })
-
-    $(document).on('keypress', function (event) {
-        if (event.which === sentences[sentenceIndex].charCodeAt(characterIndex)) {
-
-            $('#yellow-block').css('left', '+=17.5px');
-
-            $('#feedback').append('<span class ="glyphicon glyphicon-ok"></span>');
-
-            characterIndex++;
-
-            currentCharacter = currentSentence.substring(characterIndex, characterIndex + 1);
-            $('#target-letter').text(currentCharacter);
-
-            if (characterIndex === currentSentence.length) {
-
-                sentenceIndex++;
-            }
-
-            if (sentenceIndex === sentences.length) {
+            if (sentenceIndex >= sentences.length) {
+                let time = (Date.now() - startTime) / 60000;
+                let minutes = time;
                 let wpm = Math.round(54 / minutes - 2 * numberOfMistakes);
                 $('#feedback').append('<div id="wpmDiv">You typed ' + wpm + 'words per minute!</div>');
                 $('#wpmDiv').css({
@@ -70,35 +94,32 @@ $(document).ready(function () {
                     'font-weight': 'bold'
                 });
 
-
-
-
-
-                currentSentence = sentences[sentenceIndex];
-                $('#target-letter').text(currentSentence);
-                characterIndex = 0;
-                currentCharacter = currentSentence.substring(characterIndex, characterIndex + 1);
-                $('#target-letter').text(currentCharacter);
-                $('#yellow-block').css('left', '15.5px');
-                $('#feedback').empty();
-
             }
+
+
+
+
+
+           
+            $('#target-letter').text(currentSentence);
+            characterIndex = 0;
+            currentCharacter = currentSentence.substring(characterIndex, characterIndex + 1);
+            $('#target-letter').text(currentCharacter);
+            $('#yellow-block').css('left', '15.5px');
+            $('#feedback').empty();
+
         }
-        else {
-            $('feedback').append('<span class ="glyphicon glyphicon-remove"></span>');
-            numberOfMistakes++;
+    }
+    else {
+        $('feedback').append('<span class ="glyphicon glyphicon-remove-sign">X</span>');
+        numberOfMistakes++;
 
 
 
-        }
-    })
-
-
-
-
-
-
-
-
-
+    }
 })
+
+
+
+
+
